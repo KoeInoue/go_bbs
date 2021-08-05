@@ -1,0 +1,65 @@
+version: "3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "air -d"
+    tty: true
+    stdin_open: true
+    command: "air -d"
+    volumes:
+      - ./app:/go/src/app
+    ports:
+      - 8080:8080
+    security_opt:
+      - apparmor:unconfined
+    cap_add:
+      - SYS_PTRACE
+    depends_on:
+      - mariadb
+    env_file: app/.env
+    container_name: go_server
+
+  https-portal:
+    image: steveltn/https-portal:1
+    container_name: https_portal
+    ports:
+      - "80:80"
+      - "443:443"
+    tty: true
+    volumes:
+      - ./Certs/:/var/lib/https-portal/
+    environment:
+      DOMAINS: "localhost -> http://web:8080"
+      STAGE: "local"
+      # FORCE_RENEW: 'true'
+    links:
+      - web
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.5.4
+    environment:
+      MYSQL_DATABASE: viet_college
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+
+  pma:
+    container_name: pma
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: user
+      PMA_PASSWORD: password
+    ports:
+      - "8081:80"
+    depends_on:
+      - mariadb
+
+volumes:
+  db_data:
+  app:

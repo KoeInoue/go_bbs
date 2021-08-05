@@ -1,0 +1,36 @@
+version: "3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    restart: always
+    volumes:
+      - ./app:/go/src/app
+    stdin_open: true
+    ports:
+      - 8080:8080
+    security_opt:
+      - apparmor:unconfined
+    cap_add:
+      - SYS_PTRACE
+    container_name: go_server
+    env_file: app/.env
+
+  https-portal:
+    image: steveltn/https-portal:1
+    container_name: https_portal
+    ports:
+      - "80:80"
+      - "443:443"
+    tty: true
+    restart: always
+    volumes:
+      - ./Certs/:/var/lib/https-portal/
+    environment:
+      DOMAINS: "viet-college.com -> http://web:8080"
+      STAGE: "production"
+      # FORCE_RENEW: 'true'
+    links:
+      - web

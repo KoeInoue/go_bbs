@@ -1,0 +1,15 @@
+{
+  "[go]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.snippetSuggestions": "none",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+  },
+  "gopls": {
+    "usePlaceholders": false
+  },
+  "go.formatTool": "gofmt",
+}

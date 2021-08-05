@@ -1,0 +1,7 @@
+tmp/
+.env
+Certs/
+viet_college_api
+app/.env
+app/build/*
+!app/build/assets

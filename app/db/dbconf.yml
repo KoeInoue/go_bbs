@@ -1,0 +1,7 @@
+development:
+    driver: mysql
+    open: $DB_USER:$DB_PWD@tcp(mariadb:$DB_PORT)/$DB_NAME
+
+production:
+    driver: mysql
+    open: $DB_USER:$DB_PWD@tcp($DB_HOST:$DB_PORT)/$DB_NAME
