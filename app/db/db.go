@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"go_bbs/models"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -33,8 +32,6 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-
-	autoMigration()
 }
 
 // GetDB is called in models
@@ -47,9 +44,4 @@ func Close() {
 	if err := db.Close(); err != nil {
 		panic(err)
 	}
-}
-
-func autoMigration() {
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Post{})
 }
