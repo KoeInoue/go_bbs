@@ -1,7 +1,7 @@
 tmp/
 .env
 Certs/
-viet_college_api
+go_bbs
 app/.env
 app/build/*
 !app/build/assets

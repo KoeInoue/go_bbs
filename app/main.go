@@ -1,11 +1,11 @@
 package main
 
 import (
+	"go_bbs/db"
+	"go_bbs/server"
 	"net/http"
 	"os"
 	"strings"
-	"viet_college_api/infrastructure"
-	"viet_college_api/interfaces/controllers"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-contrib/cors"
@@ -16,7 +16,8 @@ import (
 var Router *gin.Engine
 
 func main() {
-	infrastructure.GetEnv()
+	db.Init()
+	server.GetEnv()
 
 	if os.Getenv("ENV") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
@@ -25,20 +26,30 @@ func main() {
 	}
 
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000"},
 
-	Router = route(r)
-	Router.Run()
-}
+		AllowMethods: []string{
+			"POST",
+			"GET",
+			"OPTIONS",
+		},
+		AllowHeaders: []string{
+			"Access-Control-Allow-Credentials",
+			"Access-Control-Allow-Headers",
+			"Content-Type",
+			"Content-Length",
+			"Accept-Encoding",
+			"Authorization",
+			"Origin",
+		},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://localhost:3000"
+		},
+	}))
 
-func route(r *gin.Engine) *gin.Engine {
-	// apiルーティング
-	api := r.Group("/api")
-	{
-		userController := controllers.NewUserController(infrastructure.NewSqlHandler())
-		api.GET("/users", func(c *gin.Context) { c.JSON(200, userController.GetUser()) })
-	}
-
+	r = server.Init()
 	// show Landing Page
 	r.Use(static.Serve("/", BinaryFileSystem("assets")))
 
@@ -46,8 +57,8 @@ func route(r *gin.Engine) *gin.Engine {
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Page not Found"})
 	})
-
-	return r
+	r.Run()
+	db.Close()
 }
 
 type binaryFileSystem struct {

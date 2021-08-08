@@ -1,7 +1,8 @@
-package infrastructure
+package db
 
 import (
 	"fmt"
+	"go_bbs/models"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -15,7 +16,7 @@ var (
 
 // Init is initialize db from main function
 func Init() {
-	err = GetEnv()
+	// err = server.GetEnv()
 	connectTemplate := "%s:%s@tcp(%s:%s)/%s?parseTime=true"
 	connect := fmt.Sprintf(
 		connectTemplate,
@@ -32,10 +33,12 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
+
+	autoMigration()
 }
 
-// Db is called in models
-func Db() *gorm.DB {
+// GetDB is called in models
+func GetDB() *gorm.DB {
 	return db
 }
 
@@ -44,4 +47,9 @@ func Close() {
 	if err := db.Close(); err != nil {
 		panic(err)
 	}
+}
+
+func autoMigration() {
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Post{})
 }

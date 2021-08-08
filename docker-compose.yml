@@ -31,7 +31,7 @@ services:
     volumes:
       - ./Certs/:/var/lib/https-portal/
     environment:
-      DOMAINS: "localhost -> http://web:8080"
+      DOMAINS: "go_bbs.dev -> http://web:8080"
       STAGE: "local"
       # FORCE_RENEW: 'true'
     links:
@@ -41,7 +41,7 @@ services:
     container_name: mariadb
     image: mariadb:10.5.4
     environment:
-      MYSQL_DATABASE: viet_college
+      MYSQL_DATABASE: bbs
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: mariadb
