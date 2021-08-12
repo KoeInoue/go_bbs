@@ -1,36 +1,33 @@
 package controllers
 
 import (
-	"go_bbs/form/api"
-	"go_bbs/models/repository"
+	"go_bbs/requests"
+	"go_bbs/services"
 	"net/http"
-	"reflect"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
-
-var validate *validator.Validate
 
 type AuthController struct{}
 
-func (ac AuthController) Register(c *gin.Context) {
-	req := api.RegisterRequest{}
-	if err := c.Bind(&req); err != nil {
-		// TODO to commonalize validation
-		errs := err.(validator.ValidationErrors)
-		respErrors := make(map[string]interface{})
-		for _, v := range errs {
-			field, _ := reflect.TypeOf(&req).Elem().FieldByName(v.Field())
-			fieldName, _ := field.Tag.Lookup("form")
-			respErrors[fieldName] = v.Tag()
-		}
-		c.JSON(http.StatusBadRequest, gin.H{"errors": respErrors})
+// Function to use Validator and Service
+func (ac AuthController) PreRegister(c *gin.Context) {
+	req := requests.PreRegisterRequest{}
+	// Validation
+	if isErr := req.Validate(c); isErr {
 		return
 	}
 
-	a := repository.AuthRepository{}
-	a.CreateUser(c)
+	// Validate duplicate Email
+	if isErr := req.ValidateDuplicateEmail(c); isErr {
+		return
+	}
+
+	service := services.AuthService{}
+	if err := service.PreRegister(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status": "ok",

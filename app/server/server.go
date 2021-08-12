@@ -16,7 +16,7 @@ func router() *gin.Engine {
 	api := r.Group("/api")
 	{
 		authCtrl := controllers.AuthController{}
-		api.POST("register", authCtrl.Register)
+		api.POST("register", authCtrl.PreRegister)
 	}
 
 	return r
