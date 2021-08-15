@@ -4,10 +4,10 @@ import "time"
 
 // swagger:model User
 type User struct {
-	ID        uint
+	Id        int
 	Name      string
 	Email     string
-	MailCode  string
+	Status    int
 	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time

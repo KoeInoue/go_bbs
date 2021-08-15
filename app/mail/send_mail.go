@@ -22,7 +22,7 @@ func (mailer *GoMailer) Send(urlToken string) error {
 	mailer.Message.SetHeader("From", "test@example.com")
 	mailer.Message.SetHeader("To", "test@example.com")
 	mailer.Message.SetHeader("Subject", "Thank you for register!")
-	mailer.Message.SetBody("text/html", fmt.Sprintf("<h4>You can continue to register by clicking <a href=\"http://localhost:3000?param=%s\">here</a></h4>", urlToken))
+	mailer.Message.SetBody("text/html", fmt.Sprintf("<h4>You can continue to register by clicking <a href=\"http://localhost:3000/register/%s\">here</a></h4>", urlToken))
 
 	d := gomail.Dialer{Host: "mailhog", Port: 1025}
 	if err := d.DialAndSend(mailer.Message); err != nil {

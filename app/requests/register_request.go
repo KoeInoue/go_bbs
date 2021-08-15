@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"fmt"
 	"go_bbs/repository"
 	"net/http"
 	"reflect"
@@ -9,14 +10,17 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type PreRegisterRequest struct {
-	Email string `form:"email" binding:"required"`
+type RegisterRequest struct {
+	Name     string `form:"name" binding:"required,max=255"`
+	Password string `form:"password" binding:"required,min=6,max=13"`
+	Token    string `form:"token" binding:"required"`
 }
 
 // Function to validate that it match the rule of PreRegisterRequest
-func (req *PreRegisterRequest) ValidatePreRegister(c *gin.Context) bool {
+func (req *RegisterRequest) ValidateRegister(c *gin.Context) bool {
 	if err := c.Bind(&req); err != nil {
 		errs := err.(validator.ValidationErrors)
+		fmt.Println(errs)
 		respErrors := make(map[string]interface{})
 		for _, v := range errs {
 			field, _ := reflect.TypeOf(&req).Elem().FieldByName(v.Field())
@@ -30,24 +34,18 @@ func (req *PreRegisterRequest) ValidatePreRegister(c *gin.Context) bool {
 	return false
 }
 
-// Function to validate that email is not duplicated
-func (req *PreRegisterRequest) ValidateDuplicateEmail(c *gin.Context) bool {
+func (req *RegisterRequest) ValidateEmailToken(c *gin.Context) bool {
 	repo := repository.AuthRepository{}
-	email, err := repo.GetPreUserByEmail(req.Email)
+	isExists, err := repo.IsPreUserExists(req.Token)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
 		return true
 	}
 
-	if email != "" {
+	if !isExists {
 		respErrors := make(map[string]interface{})
-		respErrors["email"] = "email is already in use"
+		respErrors["token"] = "register link was expired"
 		c.JSON(http.StatusBadRequest, gin.H{"errors": respErrors})
-		return true
-	}
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
 		return true
 	}
 

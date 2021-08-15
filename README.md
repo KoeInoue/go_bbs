@@ -3,7 +3,6 @@ go web api server for bbs.
 <img src="https://stickershop.line-scdn.net/stickershop/v1/product/1349132/LINEStorePC/main.png;compress=true" width="100"><img src="https://future-architect.github.io/images/20210121/Moby-logo.png" width="100">  
 
 ## Features
-- Clean Architecture
 - golang:1.15.13
 - [Air](https://github.com/cosmtrek/air)
 - gin

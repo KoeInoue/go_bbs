@@ -9,6 +9,8 @@ import (
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +28,10 @@ func main() {
 	}
 
 	r := gin.Default()
+	// セッションの設定
+	store := cookie.NewStore([]byte(os.Getenv("ACCESS_SECRET")))
+	r.Use(sessions.Sessions("auth", store))
+
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:3000"},
 
@@ -49,7 +55,7 @@ func main() {
 		},
 	}))
 
-	r = server.Init()
+	r = server.Router(r)
 	// show Landing Page
 	r.Use(static.Serve("/", BinaryFileSystem("assets")))
 

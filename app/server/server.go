@@ -6,17 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Init is initialize server
-func Init() *gin.Engine {
-	return router()
-}
-
-func router() *gin.Engine {
-	r := gin.Default()
+func Router(r *gin.Engine) *gin.Engine {
 	api := r.Group("/api")
 	{
 		authCtrl := controllers.AuthController{}
-		api.POST("register", authCtrl.PreRegister)
+		api.POST("pre-register", authCtrl.PreRegister)
+		api.POST("register", authCtrl.Register)
+		api.GET("logout", authCtrl.Logout)
 	}
 
 	return r
