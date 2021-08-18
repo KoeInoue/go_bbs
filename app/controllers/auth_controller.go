@@ -72,6 +72,33 @@ func (ac AuthController) Register(c *gin.Context) {
 	}
 }
 
+func (AuthController) Login(c *gin.Context) {
+	req := requests.LoginRequest{}
+	// Validation
+	if isErr := req.ValidateLogin(c); isErr {
+		return
+	}
+
+	service := services.AuthService{}
+	u, token, err := service.Login(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
+
+	if token == "" {
+		respErrors := make(map[string]interface{})
+		respErrors["account"] = "Incorrect email or password"
+		c.JSON(http.StatusBadRequest, gin.H{"errors": respErrors})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"user":  u,
+		"token": token,
+	})
+}
+
 func (AuthController) Logout(c *gin.Context) {
 	//セッションからデータを破棄する
 	session := sessions.Default(c)

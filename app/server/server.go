@@ -12,6 +12,7 @@ func Router(r *gin.Engine) *gin.Engine {
 		authCtrl := controllers.AuthController{}
 		api.POST("pre-register", authCtrl.PreRegister)
 		api.POST("register", authCtrl.Register)
+		api.POST("login", authCtrl.Login)
 		api.GET("logout", authCtrl.Logout)
 	}
 

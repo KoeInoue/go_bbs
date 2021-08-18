@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"go_bbs/mail"
 	"go_bbs/models"
@@ -10,17 +11,13 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/jinzhu/gorm"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct{}
-
-const (
-	// lifetime は jwt の発行から失効までの期間を表す。
-	lifetime = 30 * time.Minute
-)
 
 // Method to create new pre user and send email to the pre user
 func (AuthService) PreRegister(req requests.PreRegisterRequest) error {
@@ -88,4 +85,27 @@ func GenerateTokenProc(userId string, now time.Time) (string, error) {
 		return "", err
 	}
 	return token, nil
+}
+
+func (AuthService) Login(req requests.LoginRequest) (models.User, string, error) {
+	repo := repository.AuthRepository{}
+	u, err := repo.GetUserByEmail(req.Email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return u, "", nil
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(req.Password))
+
+	if err != nil {
+		return u, "", nil
+	} else {
+		token, err := GenerateTokenProc(fmt.Sprint(u.Id), time.Now())
+		if err != nil {
+			return u, "err", err
+		}
+
+		return u, token, nil
+	}
 }

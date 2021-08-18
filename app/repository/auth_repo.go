@@ -65,3 +65,13 @@ func (AuthRepository) StoreNewUser(user models.User) (models.User, error) {
 		return user, nil
 	}
 }
+
+func (AuthRepository) GetUserByEmail(email string) (models.User, error) {
+	orm := db.GetDB()
+	u := models.User{}
+	if err := orm.Table("users").Where("email = ?", email).First(&u).Error; err != nil {
+		return u, err
+	}
+
+	return u, nil
+}
