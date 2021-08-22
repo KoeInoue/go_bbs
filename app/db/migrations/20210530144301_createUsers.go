@@ -12,6 +12,7 @@ type User struct {
 	Email     string       `gorm:"unique; size:255; not null"`
 	Status    sql.NullBool `gorm:"default:false"`
 	Password  string       `gorm:"size:255; not null"`
+	Token     string       `gorm:"unique; size:255"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

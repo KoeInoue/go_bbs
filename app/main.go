@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +17,10 @@ import (
 var Router *gin.Engine
 
 func main() {
+	_, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
+	}
 	db.Init()
 	server.GetEnv()
 
@@ -28,9 +31,6 @@ func main() {
 	}
 
 	r := gin.Default()
-	// セッションの設定
-	store := cookie.NewStore([]byte(os.Getenv("ACCESS_SECRET")))
-	r.Use(sessions.Sessions("auth", store))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:3000"},

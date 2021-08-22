@@ -75,3 +75,24 @@ func (AuthRepository) GetUserByEmail(email string) (models.User, error) {
 
 	return u, nil
 }
+
+func (AuthRepository) StoreUserToken(user models.User, token string) error {
+	orm := db.GetDB()
+	user.Token = token
+
+	if err := orm.Table("users").Where("id = ?", user.Id).Update("token", user.Token).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (AuthRepository) VarifyToken(token string, id string) error {
+	orm := db.GetDB()
+	u := models.User{}
+	if err := orm.Table("users").Where("id = ?", id).Where("token = ?", token).First(&u).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -38,24 +38,25 @@ func (AuthService) PreRegister(req requests.PreRegisterRequest) error {
 	return nil
 }
 
-func (AuthService) Register(req requests.RegisterRequest) (string, error) {
+func (AuthService) Register(req requests.RegisterRequest) (models.User, string, error) {
 	pu := models.PreUser{
 		UrlToken: req.Token,
 	}
+	u := models.User{}
 
 	repo := repository.AuthRepository{}
 	pu, err := repo.GetPreUserByToken(pu.UrlToken)
 	if err != nil {
-		return "", err
+		return u, "", err
 	}
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return "", err
+		return u, "", err
 	}
 
-	u := models.User{
+	u = models.User{
 		Email:    pu.Email,
 		Name:     req.Name,
 		Status:   1,
@@ -64,14 +65,18 @@ func (AuthService) Register(req requests.RegisterRequest) (string, error) {
 
 	user, err := repo.StoreNewUser(u)
 	if err != nil {
-		return "", err
+		return u, "", err
 	}
 	token, err := GenerateTokenProc(fmt.Sprint(user.Id), time.Now())
 	if err != nil {
-		return "", err
+		return u, "", err
 	}
 
-	return token, nil
+	if err := repo.StoreUserToken(u, token); err != nil {
+		return u, "", err
+	}
+
+	return u, token, nil
 }
 
 func GenerateTokenProc(userId string, now time.Time) (string, error) {
@@ -104,6 +109,10 @@ func (AuthService) Login(req requests.LoginRequest) (models.User, string, error)
 		token, err := GenerateTokenProc(fmt.Sprint(u.Id), time.Now())
 		if err != nil {
 			return u, "err", err
+		}
+
+		if err := repo.StoreUserToken(u, token); err != nil {
+			return u, "", err
 		}
 
 		return u, token, nil

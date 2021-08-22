@@ -6,7 +6,6 @@ import (
 	"go_bbs/services"
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 )
@@ -50,7 +49,7 @@ func (ac AuthController) Register(c *gin.Context) {
 
 	// register
 	service := services.AuthService{}
-	if token, err := service.Register(req); err != nil {
+	if u, token, err := service.Register(req); err != nil {
 		var mysqlErr *mysql.MySQLError
 		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
 			respErrors := make(map[string]interface{})
@@ -61,11 +60,10 @@ func (ac AuthController) Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
 		return
 	} else {
-		session := sessions.Default(c)
-		session.Set("auth", token)
-		session.Save()
+
 		c.JSON(http.StatusCreated, gin.H{
 			"status": "ok",
+			"user":   u,
 			"token":  token,
 		})
 		return
@@ -97,11 +95,4 @@ func (AuthController) Login(c *gin.Context) {
 		"user":  u,
 		"token": token,
 	})
-}
-
-func (AuthController) Logout(c *gin.Context) {
-	//セッションからデータを破棄する
-	session := sessions.Default(c)
-	session.Clear()
-	session.Save()
 }
