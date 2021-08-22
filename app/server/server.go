@@ -16,7 +16,9 @@ func Router(r *gin.Engine) *gin.Engine {
 		api.POST("login", authCtrl.Login)
 		api.Use(middleware.AuthMiddleware())
 		{
-
+			postCtrl := controllers.PostController{}
+			api.POST("create-post", postCtrl.CreatePost)
+			api.GET("get-posts", postCtrl.GetPosts)
 		}
 	}
 
