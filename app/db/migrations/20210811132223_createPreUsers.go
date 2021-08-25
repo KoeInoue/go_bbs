@@ -13,6 +13,7 @@ type PreUser struct {
 	Flag      sql.NullBool `gorm:"default:false"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 func init() {

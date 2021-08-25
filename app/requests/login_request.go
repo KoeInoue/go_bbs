@@ -1,7 +1,6 @@
 package requests
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 
@@ -18,7 +17,6 @@ type LoginRequest struct {
 func (req *LoginRequest) ValidateLogin(c *gin.Context) bool {
 	if err := c.Bind(&req); err != nil {
 		errs := err.(validator.ValidationErrors)
-		fmt.Println(errs)
 		respErrors := make(map[string]interface{})
 		for _, v := range errs {
 			field, _ := reflect.TypeOf(&req).Elem().FieldByName(v.Field())

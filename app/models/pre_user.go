@@ -2,15 +2,15 @@ package models
 
 import (
 	"database/sql"
-	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 // swagger:model User
 type PreUser struct {
-	Id        uint
-	UrlToken  string
-	Email     string
-	Flag      sql.NullBool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	gorm.Model
+	ID       uint
+	UrlToken string
+	Email    string
+	Flag     sql.NullBool
 }

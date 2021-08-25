@@ -15,6 +15,7 @@ type User struct {
 	Token     string       `gorm:"unique; size:255"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 func init() {

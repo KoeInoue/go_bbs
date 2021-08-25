@@ -18,7 +18,10 @@ func (PostController) CreatePost(c *gin.Context) {
 	}
 
 	service := services.PostService{}
-	service.CreatePost(req)
+	if err := service.CreatePost(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
@@ -34,7 +37,7 @@ func (PostController) GetPosts(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 		"posts":  posts,
 	})

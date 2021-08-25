@@ -67,12 +67,12 @@ func (AuthService) Register(req requests.RegisterRequest) (models.User, string, 
 	if err != nil {
 		return u, "", err
 	}
-	token, err := GenerateTokenProc(fmt.Sprint(user.Id), time.Now())
+	token, err := GenerateTokenProc(fmt.Sprint(user.ID), time.Now())
 	if err != nil {
 		return u, "", err
 	}
 
-	if err := repo.StoreUserToken(u, token); err != nil {
+	if err := repo.StoreUserToken(user, token); err != nil {
 		return u, "", err
 	}
 
@@ -106,7 +106,7 @@ func (AuthService) Login(req requests.LoginRequest) (models.User, string, error)
 	if err != nil {
 		return u, "", nil
 	} else {
-		token, err := GenerateTokenProc(fmt.Sprint(u.Id), time.Now())
+		token, err := GenerateTokenProc(fmt.Sprint(u.ID), time.Now())
 		if err != nil {
 			return u, "err", err
 		}

@@ -1,13 +1,16 @@
 package models
 
-import "time"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 // Post is post models property
 type Post struct {
-	ID        uint
-	Content   string
-	UserID    uint
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	User      User
+	gorm.Model
+	ID            uint
+	Content       string
+	UserID        uint
+	User          User
+	Comments      []Comment
+	PostReactions []PostReaction
 }

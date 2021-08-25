@@ -1,7 +1,6 @@
 package requests
 
 import (
-	"fmt"
 	"go_bbs/repository"
 	"net/http"
 	"reflect"
@@ -20,7 +19,6 @@ type RegisterRequest struct {
 func (req *RegisterRequest) ValidateRegister(c *gin.Context) bool {
 	if err := c.Bind(&req); err != nil {
 		errs := err.(validator.ValidationErrors)
-		fmt.Println(errs)
 		respErrors := make(map[string]interface{})
 		for _, v := range errs {
 			field, _ := reflect.TypeOf(&req).Elem().FieldByName(v.Field())

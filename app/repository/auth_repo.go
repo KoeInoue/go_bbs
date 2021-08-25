@@ -69,7 +69,7 @@ func (AuthRepository) StoreNewUser(user models.User) (models.User, error) {
 func (AuthRepository) GetUserByEmail(email string) (models.User, error) {
 	orm := db.GetDB()
 	u := models.User{}
-	if err := orm.Table("users").Where("email = ?", email).First(&u).Error; err != nil {
+	if err := orm.Table("users").Where("email = ?", email).Find(&u).Error; err != nil {
 		return u, err
 	}
 
@@ -80,7 +80,7 @@ func (AuthRepository) StoreUserToken(user models.User, token string) error {
 	orm := db.GetDB()
 	user.Token = token
 
-	if err := orm.Table("users").Where("id = ?", user.Id).Update("token", user.Token).Error; err != nil {
+	if err := orm.Model(&user).Update("Token", token).Error; err != nil {
 		return err
 	}
 
@@ -90,7 +90,7 @@ func (AuthRepository) StoreUserToken(user models.User, token string) error {
 func (AuthRepository) VarifyToken(token string, id string) error {
 	orm := db.GetDB()
 	u := models.User{}
-	if err := orm.Table("users").Where("id = ?", id).Where("token = ?", token).First(&u).Error; err != nil {
+	if err := orm.Where("token = ?", token).First(&u, id).Error; err != nil {
 		return err
 	}
 

@@ -1,11 +1,18 @@
 package repository
 
 import (
+	"fmt"
 	"go_bbs/db"
 	"go_bbs/models"
 )
 
 type PostRepository struct{}
+
+type PostResult struct {
+	Name    string
+	Content string
+	UserId  uint
+}
 
 func (PostRepository) CreatePost(p *models.Post) error {
 	orm := db.GetDB()
@@ -17,17 +24,14 @@ func (PostRepository) CreatePost(p *models.Post) error {
 
 func (PostRepository) GetPost(posts *[]models.Post) error {
 	orm := db.GetDB()
-	if err := orm.Table("posts").Order("created_at").Find(&posts).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (PostRepository) GetPostRelation(post *models.Post, userId uint) error {
-	orm := db.GetDB()
-	if err := orm.Table("users").Select("name").Where("id = ?", userId).Find(&post.User).Error; err != nil {
-		return err
+	// var (
+	// 	user          models.User
+	// 	comments      []models.Comment
+	// 	postReactions []models.PostReaction
+	// )
+	err := orm.Find(&posts, 1).Error
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	return nil

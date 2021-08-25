@@ -12,6 +12,7 @@ type Post struct {
 	Content   string `gorm:"type:text; not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 func init() {

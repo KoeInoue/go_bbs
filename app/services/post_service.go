@@ -24,17 +24,13 @@ func (PostService) CreatePost(req requests.PostRequest) error {
 
 func (PostService) GetPosts() ([]models.Post, error) {
 	repo := repository.PostRepository{}
-	posts := []models.Post{}
+
+	var posts []models.Post
 	if err := repo.GetPost(&posts); err != nil {
-		return posts, err
+		return posts, nil
 	}
 
-	for i := range posts {
-		err := repo.GetPostRelation(&posts[i], posts[i].UserID)
-		if err != nil {
-			return posts, err
-		}
-	}
+	// fmt.Println(posts)
 
 	return posts, nil
 }
