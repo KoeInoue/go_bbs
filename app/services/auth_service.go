@@ -76,7 +76,7 @@ func (AuthService) Register(req requests.RegisterRequest) (models.User, string, 
 		return u, "", err
 	}
 
-	return u, token, nil
+	return user, token, nil
 }
 
 func GenerateTokenProc(userId string, now time.Time) (string, error) {
@@ -106,7 +106,7 @@ func (AuthService) Login(req requests.LoginRequest) (models.User, string, error)
 	if err != nil {
 		return u, "", nil
 	} else {
-		token, err := GenerateTokenProc(fmt.Sprint(u.ID), time.Now())
+		token, err := GenerateTokenProc(fmt.Sprint(u.Id), time.Now())
 		if err != nil {
 			return u, "err", err
 		}
