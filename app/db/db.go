@@ -25,6 +25,7 @@ func Init() {
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
 	)
+	connect = connect + "&loc=Asia%2FTokyo"
 
 	// connect to DB
 	db, err = gorm.Open("mysql", connect)

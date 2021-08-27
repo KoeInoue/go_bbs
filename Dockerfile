@@ -14,6 +14,9 @@ RUN apk update \
     musl-dev \
     upx \
     && apk add --no-cache ca-certificates && update-ca-certificates \
+    && apk add --no-cache tzdata && \
+    cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
+    apk del tzdata \
     && go get -u github.com/cosmtrek/air@latest \
     && go get -u bitbucket.org/liamstask/goose/cmd/goose \
     && go get github.com/pwaller/goupx \

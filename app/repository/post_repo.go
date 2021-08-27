@@ -22,14 +22,9 @@ func (PostRepository) CreatePost(p *models.Post) error {
 	return nil
 }
 
-func (PostRepository) GetPost(posts *[]models.Post) error {
+func (PostRepository) GetPosts(post *[]models.Post) error {
 	orm := db.GetDB()
-	// var (
-	// 	user          models.User
-	// 	comments      []models.Comment
-	// 	postReactions []models.PostReaction
-	// )
-	err := orm.Find(&posts, 1).Error
+	err := orm.Preload("User").Preload("Comments").Preload("PostReactions").Order("created_at desc").Find(&post)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -26,11 +26,9 @@ func (PostService) GetPosts() ([]models.Post, error) {
 	repo := repository.PostRepository{}
 
 	var posts []models.Post
-	if err := repo.GetPost(&posts); err != nil {
+	if err := repo.GetPosts(&posts); err != nil {
 		return posts, nil
 	}
-
-	// fmt.Println(posts)
 
 	return posts, nil
 }

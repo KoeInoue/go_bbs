@@ -7,7 +7,6 @@ import (
 // Post is post models property
 type Post struct {
 	gorm.Model
-	ID            uint
 	Content       string
 	UserID        uint
 	User          User

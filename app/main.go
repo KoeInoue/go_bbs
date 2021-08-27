@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-contrib/cors"
@@ -17,10 +16,6 @@ import (
 var Router *gin.Engine
 
 func main() {
-	_, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		panic(err)
-	}
 	db.Init()
 	server.GetEnv()
 
