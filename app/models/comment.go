@@ -7,8 +7,8 @@ import (
 // Post is post models property
 type Comment struct {
 	gorm.Model
-	ID      uint
-	UserId  uint
-	PostId  uint
+	UserID  uint
+	PostID  uint
 	Content string
+	User    User
 }

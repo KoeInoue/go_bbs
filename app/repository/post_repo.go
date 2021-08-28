@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"fmt"
 	"go_bbs/db"
 	"go_bbs/models"
+
+	"github.com/jinzhu/gorm"
 )
 
 type PostRepository struct{}
@@ -24,9 +25,11 @@ func (PostRepository) CreatePost(p *models.Post) error {
 
 func (PostRepository) GetPosts(post *[]models.Post) error {
 	orm := db.GetDB()
-	err := orm.Preload("User").Preload("Comments").Preload("PostReactions").Order("created_at desc").Find(&post)
+	err := orm.Preload("User").Preload("Comments", func(orm *gorm.DB) *gorm.DB {
+		return orm.Order("created_at DESC")
+	}).Preload("Comments.User").Preload("PostReactions").Order("created_at DESC").Find(&post).Error
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
 	return nil

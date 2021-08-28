@@ -19,6 +19,8 @@ func Router(r *gin.Engine) *gin.Engine {
 			postCtrl := controllers.PostController{}
 			api.POST("create-post", postCtrl.CreatePost)
 			api.GET("get-posts", postCtrl.GetPosts)
+			commCtrl := controllers.CommentController{}
+			api.POST("create-comment", commCtrl.CreateComment)
 		}
 	}
 
