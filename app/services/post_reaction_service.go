@@ -22,3 +22,13 @@ func (PostReactionService) CreatePostReaction(req requests.PostReactionRequest) 
 
 	return pr, nil
 }
+
+func (PostReactionService) DeletePostReaction(req requests.PostReactionIdRequest) error {
+	repo := repository.PostReactionRepository{}
+	id := req.ID
+	if err := repo.DeletePostReaction(&id); err != nil {
+		return err
+	}
+
+	return nil
+}

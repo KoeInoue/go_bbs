@@ -26,7 +26,7 @@ func (PostRepository) CreatePost(p *models.Post) error {
 func (PostRepository) GetPosts(post *[]models.Post) error {
 	orm := db.GetDB()
 	err := orm.Preload("User").Preload("Comments", func(orm *gorm.DB) *gorm.DB {
-		return orm.Order("created_at DESC")
+		return orm.Order("created_at ASC")
 	}).Preload("Comments.User").Preload("PostReactions").Order("created_at DESC").Find(&post).Error
 	if err != nil {
 		return err

@@ -15,6 +15,10 @@ type PostReactionRequest struct {
 	PostID    uint   `json:"postId" binding:"required"`
 }
 
+type PostReactionIdRequest struct {
+	ID int `json:"reactionId"`
+}
+
 // Function to validate that it match the rule of PreRegisterRequest
 func (req *PostReactionRequest) ValidatePostReaction(c *gin.Context) bool {
 	if err := c.Bind(&req); err != nil {

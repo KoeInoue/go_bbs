@@ -18,3 +18,13 @@ func (PostReactionRepository) CreatePostReaction(pr *models.PostReaction) error 
 
 	return nil
 }
+
+func (PostReactionRepository) DeletePostReaction(id *int) error {
+	orm := db.GetDB()
+	var pr models.PostReaction
+	if err := orm.Where("id = ?", id).Delete(pr).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
