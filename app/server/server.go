@@ -24,6 +24,9 @@ func Router(r *gin.Engine) *gin.Engine {
 			postReactCtrl := controllers.PostReactionController{}
 			api.POST("create-reaction", postReactCtrl.CreatePostReaction)
 			api.POST("delete-reaction", postReactCtrl.DeletePostReaction)
+			calcCtrl := controllers.CalcController{}
+			api.GET("calc-concurrently", calcCtrl.CalcConcurrently)
+			api.GET("calc-series", calcCtrl.CalcInSeries)
 		}
 	}
 
