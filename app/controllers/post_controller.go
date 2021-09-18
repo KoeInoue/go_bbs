@@ -42,3 +42,39 @@ func (PostController) GetPosts(c *gin.Context) {
 		"posts":  posts,
 	})
 }
+
+func (PostController) DeletePost(c *gin.Context) {
+	var req requests.PostIdRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
+
+	service := services.PostService{}
+	if err := service.DeletePost(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	} else {
+		c.JSON(http.StatusCreated, gin.H{
+			"status": "ok",
+		})
+	}
+}
+
+func (PostController) EditPost(c *gin.Context) {
+	var req requests.PostEditRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
+
+	service := services.PostService{}
+	if err := service.EditPost(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	} else {
+		c.JSON(http.StatusCreated, gin.H{
+			"status": "ok",
+		})
+	}
+}

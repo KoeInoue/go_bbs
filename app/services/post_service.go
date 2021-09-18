@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"go_bbs/models"
 	"go_bbs/repository"
 	"go_bbs/requests"
@@ -31,4 +32,28 @@ func (PostService) GetPosts() ([]models.Post, error) {
 	}
 
 	return posts, nil
+}
+
+func (PostService) DeletePost(req requests.PostIdRequest) error {
+	repo := repository.PostRepository{}
+	id := req.ID
+	if err := repo.DeletePost(&id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (PostService) EditPost(req requests.PostEditRequest) error {
+	repo := repository.PostRepository{}
+	id := req.ID
+	content := req.Content
+	fmt.Println(req)
+	fmt.Println("a")
+
+	if err := repo.EditPost(id, content); err != nil {
+		return err
+	}
+
+	return nil
 }

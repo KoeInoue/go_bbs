@@ -7,6 +7,3 @@ type CalcResult struct {
 	NewsUrl      string
 	Wheather     string
 }
-
-type Formulas struct {
-}

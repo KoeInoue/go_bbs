@@ -14,6 +14,15 @@ type PostRequest struct {
 	UserID  uint   `json:"userId" binding:"required"`
 }
 
+type PostEditRequest struct {
+	Content string `json:"postContent"`
+	ID      int    `json:"postId"`
+}
+
+type PostIdRequest struct {
+	ID int `json:"postId"`
+}
+
 // Function to validate that it match the rule of PreRegisterRequest
 func (req *PostRequest) ValidatePost(c *gin.Context) bool {
 	if err := c.Bind(&req); err != nil {

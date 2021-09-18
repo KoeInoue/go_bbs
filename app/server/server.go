@@ -19,11 +19,16 @@ func Router(r *gin.Engine) *gin.Engine {
 			postCtrl := controllers.PostController{}
 			api.POST("create-post", postCtrl.CreatePost)
 			api.GET("get-posts", postCtrl.GetPosts)
+			api.POST("delete-post", postCtrl.DeletePost)
+			api.POST("edit-post", postCtrl.EditPost)
+
 			commCtrl := controllers.CommentController{}
 			api.POST("create-comment", commCtrl.CreateComment)
+
 			postReactCtrl := controllers.PostReactionController{}
 			api.POST("create-reaction", postReactCtrl.CreatePostReaction)
 			api.POST("delete-reaction", postReactCtrl.DeletePostReaction)
+
 			calcCtrl := controllers.CalcController{}
 			api.GET("calc-concurrently", calcCtrl.CalcConcurrently)
 			api.GET("calc-series", calcCtrl.CalcInSeries)

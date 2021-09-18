@@ -34,3 +34,26 @@ func (PostRepository) GetPosts(post *[]models.Post) error {
 
 	return nil
 }
+
+func (PostRepository) DeletePost(id *int) error {
+	orm := db.GetDB()
+	var p models.Post
+	if err := orm.Where("id = ?", id).Delete(p).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (PostRepository) EditPost(id int, content string) error {
+	orm := db.GetDB()
+	var p = models.Post{
+		Content: content,
+	}
+
+	if err := orm.Model(p).Where("id = ?", id).Update(p).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
