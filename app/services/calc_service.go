@@ -5,38 +5,122 @@ import (
 	"errors"
 	"fmt"
 	"go_bbs/models"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 )
 
 type CalcService struct{}
 
-func (CalcService) CalcConcurrently(date string) (models.CalcResult, error) {
-	return models.CalcResult{}, nil
+func (ser CalcService) CalcConcurrently(date string) (models.CalcResult, error) {
+	now := time.Now()
+	var wg sync.WaitGroup
+
+	// Get Prime numbers
+	primeFun := func() <-chan []int {
+		primeNumCh := make(chan []int)
+		wg.Add(1)
+		go func() {
+			primeNumbers := make([]int, 168)
+			defer wg.Done()
+			defer close(primeNumCh)
+			defer fmt.Println("end prime")
+			fmt.Println("start prime")
+			ser.getPrimeNumbers(&primeNumbers)
+			primeNumCh <- primeNumbers
+		}()
+		return primeNumCh
+	}
+
+	type newsResult struct {
+		title string
+		url   string
+		err   error
+	}
+	newsFun := func(date string) <-chan newsResult {
+		newsCh := make(chan newsResult)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			defer close(newsCh)
+			defer fmt.Println("end news")
+			fmt.Println("start news")
+			title, url, err := ser.getNews(date)
+			newsCh <- newsResult{title: title, url: url, err: err}
+		}()
+		return newsCh
+	}
+
+	type weatherResult struct {
+		content string
+		err     error
+	}
+	weatherFun := func() <-chan weatherResult {
+		wheatherCh := make(chan weatherResult)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			defer close(wheatherCh)
+			defer fmt.Println("end weather")
+			fmt.Println("start weather")
+			content, err := ser.getWheather()
+			wheatherCh <- weatherResult{content: content, err: err}
+		}()
+		return wheatherCh
+	}
+
+	primeNumCh := primeFun()
+	newsCh := newsFun(date)
+	weatherCh := weatherFun()
+
+	primeNum := <-primeNumCh
+	newsRes := <-newsCh
+	weatherRes := <-weatherCh
+
+	wg.Wait()
+	spent := time.Since(now).Seconds()
+
+	return models.CalcResult{
+		Spent:        spent,
+		PrimeNumbers: primeNum,
+		NewsTitle:    newsRes.title,
+		NewsUrl:      newsRes.url,
+		Wheather:     weatherRes.content,
+	}, nil
 }
 
 func (ser CalcService) CalcInSeries(date string) (models.CalcResult, error) {
 	now := time.Now()
 	// Get Prime numbers
+	fmt.Println("start prime")
 	primeNumbers := make([]int, 168)
 	ser.getPrimeNumbers(&primeNumbers)
+	fmt.Println("end prime")
 
 	// Get today's news
+	fmt.Println("start news")
 	newsTitle, newsUrl, err := ser.getNews(date)
 	if err != nil {
 		return models.CalcResult{}, err
 	}
+	fmt.Println("end news")
 
+	fmt.Println("start wheather")
 	// Get what day is this day
-	whatDay, err := ser.getWhatDay(date)
+	wheather, err := ser.getWheather()
+	if err != nil {
+		return models.CalcResult{}, err
+	}
+	fmt.Println("end wheather")
 
 	return models.CalcResult{
 		Spent:        time.Since(now).Seconds(),
 		PrimeNumbers: primeNumbers,
 		NewsTitle:    newsTitle,
 		NewsUrl:      newsUrl,
-		WhatDay:      whatDay,
+		Wheather:     wheather,
 	}, nil
 }
 
@@ -85,11 +169,24 @@ func (CalcService) getNews(date string) (string, string, error) {
 	}
 	newsTitle := result["articles"][0]["title"]
 	newsUrl := result["articles"][0]["url"]
-	fmt.Println(newsTitle)
 
 	return newsTitle, newsUrl, nil
 }
 
-func (CalcService) getWhatDay(date string) (string, error) {
-	return "", errors.New("No")
+func (CalcService) getWheather() (string, error) {
+	resp, err := http.Get("https://wttr.in/Tokyo?format=3")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// 200 OK 以外の場合はエラーメッセージを表示して終了
+	if resp.StatusCode != 200 {
+		fmt.Println("Error Response:", resp.Status)
+		return "", err
+	}
+
+	weather, _ := ioutil.ReadAll(resp.Body)
+
+	return string(weather), nil
 }

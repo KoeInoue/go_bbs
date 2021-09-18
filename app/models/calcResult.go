@@ -5,7 +5,7 @@ type CalcResult struct {
 	PrimeNumbers []int
 	NewsTitle    string
 	NewsUrl      string
-	WhatDay      string
+	Wheather     string
 }
 
 type Formulas struct {
